@@ -35,6 +35,7 @@ def restart():
 @bot.command()
 @asyncio.coroutine
 def sleep(*,sleepytime):
+	"""sleeps for number of seconds specified after word sleep"""
 	global voice
 	global sleep
 	sleep=int(sleepytime)
@@ -49,26 +50,28 @@ def play():
 	global voice
 	global sleep
 	global current
+	localmode=mode
 	sleep = 0
-	ch=bot.get_channel("channel")
+	ch=bot.get_channel('channel')
 	voice = yield from bot.join_voice_channel(ch)
 	songs=shuff()
 	current=songs.pop(0)
-	player=voice.create_ffmpeg_player("./music/"+current,options="-q:a 9")
+	player=voice.create_ffmpeg_player(mode+current,options="-q:a 9")
 	yield from bot.change_presence(game=discord.Game(type=2,name=current))
 	player.start()
 	while True:
 		if message==-1:
 			return 0
-		elif message==5:
+		elif message==5 or mode!=localmode:
 			message=1
 			player.stop()
-			if len(songs)<1:
-                                songs=shuff()
-                        current=songs.pop(0)
-                        yield from bot.change_presence(game=discord.Game(type=2,name=current))
-                        player=voice.create_ffmpeg_player("./music/"+current,options="-q:a 9")
-                        player.start()
+			if len(songs)<1 or mode!=localmode:
+				songs=shuff()
+				localmode=mode
+			current=songs.pop(0)
+			yield from bot.change_presence(game=discord.Game(type=2,name=current))
+			player=voice.create_ffmpeg_player(mode+current,options="-q:a 9")
+			player.start()
 		elif sleep!=0:
 			print ("about to sleep\n")
 			player.stop()
@@ -80,7 +83,7 @@ def play():
 			if len(songs)<1:
 				songs=shuff()
 			current=songs.pop(0)
-			player=voice.create_ffmpeg_player("./music/"+current,options="-q:a 9")
+			player=voice.create_ffmpeg_player(mode+current,options="-q:a 9")
 			player.start()
 		elif player.is_playing():
 			yield from asyncio.sleep(5)
@@ -89,21 +92,22 @@ def play():
 				songs=shuff()
 			current=songs.pop(0)
 			yield from bot.change_presence(game=discord.Game(type=2,name=current))
-			player=voice.create_ffmpeg_player("./music/"+current,options="-q:a 9")
+			player=voice.create_ffmpeg_player(mode+current,options="-q:a 9")
 			player.start()
 
 
 
 
 def shuff():
-	songList=os.listdir("./music")
+	global mode
+	songList=os.listdir(mode)
 	shuffle(songList)
 	return songList
 
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def skip(self):
-"""skips song"""
+	"""skips song"""
 	global message
 	message=5
 
@@ -111,7 +115,7 @@ def skip(self):
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def forever(self):
-"""stops music (for now)"""
+	"""stops music (for now)"""
 	global message
 	message=-1
 	yield from bot.change_presence(game=discord.Game(type=1,name='Type \"music start\" to start music'))
@@ -119,9 +123,9 @@ def forever(self):
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def start(self):
-"""starts music"""
+	"""starts music"""
 	global mode
-	mode=0
+	mode="./music/"
 	global message
 	if message!=2:
 		message=1
@@ -130,15 +134,17 @@ def start(self):
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def rin(self):
-"""sets to only play rin solos"""
-	mode=1
+	global mode
+	"""sets to only play rin solos"""
+	mode="./music/rin/"
 
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def all(self):
-"""sets to play all love live music (includes rin solos"""
-	mode=0
+	global mode
+	"""sets to play all love live music (includes rin solos"""
+	mode="./music/"
 
 global message
 message=0
-bot.run('Token')
+bot.run('token')
