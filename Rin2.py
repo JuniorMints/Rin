@@ -45,6 +45,7 @@ def sleep(*,sleepytime):
 def play():
 	global message
 	yield from bot.wait_until_ready()
+	global mode
 	global voice
 	global sleep
 	global current
@@ -59,13 +60,21 @@ def play():
 	while True:
 		if message==-1:
 			return 0
+		elif message==5:
+			message=1
+			player.stop()
+			if len(songs)<1:
+                                songs=shuff()
+                        current=songs.pop(0)
+                        yield from bot.change_presence(game=discord.Game(type=2,name=current))
+                        player=voice.create_ffmpeg_player("./music/"+current,options="-q:a 9")
+                        player.start()
 		elif sleep!=0:
 			print ("about to sleep\n")
 			player.stop()
 			yield from bot.change_presence(game=discord.Game(type=2,name="quick {} second nap!".format(sleep)))
 			yield from voice.disconnect()
 			yield from asyncio.sleep (sleep)
-			sys.exit()
 			sleep = 0
 			voice=yield from bot.join_voice_channel(ch)
 			if len(songs)<1:
@@ -91,12 +100,18 @@ def shuff():
 	shuffle(songList)
 	return songList
 
-
+@bot.command(pass_context=True)
+@asyncio.coroutine
+def skip(self):
+"""skips song"""
+	global message
+	message=5
 
 
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def forever(self):
+"""stops music (for now)"""
 	global message
 	message=-1
 	yield from bot.change_presence(game=discord.Game(type=1,name='Type \"music start\" to start music'))
@@ -104,10 +119,25 @@ def forever(self):
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def start(self):
+"""starts music"""
+	global mode
+	mode=0
 	global message
 	if message!=2:
 		message=1
 		bot.loop.create_task(play())
+
+@bot.command(pass_context=True)
+@asyncio.coroutine
+def rin(self):
+"""sets to only play rin solos"""
+	mode=1
+
+@bot.command(pass_context=True)
+@asyncio.coroutine
+def all(self):
+"""sets to play all love live music (includes rin solos"""
+	mode=0
 
 global message
 message=0
