@@ -29,6 +29,7 @@ def on_ready():
 @bot.command()
 @asyncio.coroutine
 def restart():
+	"""reboot the bot, run if bot refuses to play"""
 	sys.exit(0)
 
 
@@ -61,7 +62,7 @@ def play():
 	player.start()
 	while True:
 		if message==-1:
-			return 0
+			break
 		elif message==5 or mode!=localmode:
 			message=1
 			player.stop()
@@ -134,15 +135,15 @@ def start(self):
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def rin(self):
-	global mode
 	"""sets to only play rin solos"""
+	global mode
 	mode="./music/rin/"
 
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def all(self):
-	global mode
 	"""sets to play all love live music (includes rin solos"""
+	global mode
 	mode="./music/"
 
 global message
