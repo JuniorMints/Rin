@@ -1,0 +1,114 @@
+import asyncio
+import discord
+from discord.ext import commands
+import re
+import random
+import os
+import time
+from random import shuffle
+import sys
+#from mutagen.mp3 import MP3
+bot = commands.Bot(command_prefix=['!µsic ','!music ','!Music '], descriptio='I love Ramen and Kayo-chin')
+if not discord.opus.is_loaded():
+	# the 'opus' library here is opus.dll on windows
+	# or libopus.so on linux in the current directory
+	# you should replace this with the location the
+	# opus library is located in and with the proper filename.
+	# note that on windows this DLL is automatically provided for you
+	discord.opus.load_opus('opus')
+
+
+
+
+@bot.event
+@asyncio.coroutine 
+def on_ready():
+	print('Logged in as:\n{0} (ID: {0.id})'.format(bot.user))
+
+
+@bot.command()
+@asyncio.coroutine
+def restart():
+	sys.exit(0)
+
+
+@bot.command()
+@asyncio.coroutine
+def sleep(*,sleepytime):
+	global voice
+	global sleep
+	sleep=int(sleepytime)
+	#yield from bot.say("Rin is going to take a quick {} second catNyap!".format(sleep))
+
+
+@asyncio.coroutine
+def play():
+	global message
+	yield from bot.wait_until_ready()
+	global voice
+	global sleep
+	global current
+	sleep = 0
+	ch=bot.get_channel("channel")
+	voice = yield from bot.join_voice_channel(ch)
+	songs=shuff()
+	current=songs.pop(0)
+	player=voice.create_ffmpeg_player("./music/"+current,options="-q:a 9")
+	yield from bot.change_presence(game=discord.Game(type=2,name=current))
+	player.start()
+	while True:
+		if message==-1:
+			return 0
+		elif sleep!=0:
+			print ("about to sleep\n")
+			player.stop()
+			yield from bot.change_presence(game=discord.Game(type=2,name="quick {} second nap!".format(sleep)))
+			yield from voice.disconnect()
+			yield from asyncio.sleep (sleep)
+			sys.exit()
+			sleep = 0
+			voice=yield from bot.join_voice_channel(ch)
+			if len(songs)<1:
+				songs=shuff()
+			current=songs.pop(0)
+			player=voice.create_ffmpeg_player("./music/"+current,options="-q:a 9")
+			player.start()
+		elif player.is_playing():
+			yield from asyncio.sleep(5)
+		else:
+			if len(songs)<1:
+				songs=shuff()
+			current=songs.pop(0)
+			yield from bot.change_presence(game=discord.Game(type=2,name=current))
+			player=voice.create_ffmpeg_player("./music/"+current,options="-q:a 9")
+			player.start()
+
+
+
+
+def shuff():
+	songList=os.listdir("./music")
+	shuffle(songList)
+	return songList
+
+
+
+
+@bot.command(pass_context=True)
+@asyncio.coroutine
+def forever(self):
+	global message
+	message=-1
+	yield from bot.change_presence(game=discord.Game(type=1,name='Type \"music start\" to start music'))
+
+@bot.command(pass_context=True)
+@asyncio.coroutine
+def start(self):
+	global message
+	if message!=2:
+		message=1
+		bot.loop.create_task(play())
+
+global message
+message=0
+bot.run('Token')
