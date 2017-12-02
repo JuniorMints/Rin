@@ -24,6 +24,7 @@ if not discord.opus.is_loaded():
 @asyncio.coroutine 
 def on_ready():
 	print('Logged in as:\n{0} (ID: {0.id})'.format(bot.user))
+	yield from bot.change_presence(game=discord.Game(type=1,name='Type \"!music start\" to start music'))
 
 
 @bot.command()
@@ -36,10 +37,10 @@ def restart():
 @bot.command()
 @asyncio.coroutine
 def sleep(*,sleepytime):
-	"""sleeps for number of seconds specified after word sleep"""
+	"""currently disabled"""
 	global voice
 	global sleep
-	sleep=int(sleepytime)
+	#sleep=int(sleepytime)
 	#yield from bot.say("Rin is going to take a quick {} second catNyap!".format(sleep))
 
 
@@ -62,6 +63,8 @@ def play():
 	player.start()
 	while True:
 		if message==-1:
+			player.stop()
+			sys.exit(0)
 			break
 		elif message==5 or mode!=localmode:
 			message=1
@@ -119,7 +122,7 @@ def forever(self):
 	"""stops music (for now)"""
 	global message
 	message=-1
-	yield from bot.change_presence(game=discord.Game(type=1,name='Type \"music start\" to start music'))
+	yield from bot.change_presence(game=discord.Game(type=1,name='Type \"!music start\" to start music'))
 
 @bot.command(pass_context=True)
 @asyncio.coroutine
