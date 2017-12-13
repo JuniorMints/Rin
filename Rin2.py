@@ -60,7 +60,7 @@ def request(ctx,*,message):
 			requests.append(song)
 			yield from bot.say("added")
 			return 0
-		elif song.lower().startswith(message.lower()):
+		elif (message.lower()) in song.lower():
 			potential.append(song)
 	if len(potential)==0:
 		yield from bot.say("song not found")
