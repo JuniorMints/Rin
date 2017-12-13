@@ -121,7 +121,7 @@ def play():
 			if len(songs)<1 or mode!=localmode:
 				songs=shuff()
 				localmode=mode
-			if len(requests)>1:
+			if len(requests)>0:
 				current=requests.pop(0)
 			else:
 				current=songs.pop(0)
@@ -149,7 +149,7 @@ def play():
 		else:
 			if len(songs)<1:
 				songs=shuff()
-			if len(requests>0):
+			if len(requests)>0:
 				current=requests.pop(0)
 			else:
 				current=songs.pop(0)
