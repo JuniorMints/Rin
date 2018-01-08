@@ -8,7 +8,7 @@ import time
 from random import shuffle
 import sys
 #from mutagen.mp3 import MP3
-bot = commands.Bot(command_prefix=['!µsic ','!music ','!Music '], descriptio='I love Ramen and Kayo-chin')
+bot = commands.Bot(command_prefix=['!µsic ','!music ','!Music '], descripton='I love Ramen, Kayo-chin, and being a School Idol!')
 songList=os.listdir("./music/")
 
 if not discord.opus.is_loaded():
@@ -92,6 +92,23 @@ def list(ctx):
 	for songName in songs:
 		yield from bot.send_message(ctx.message.author,songName)
 
+@bot.command()
+@asyncio.coroutine
+def update():
+	"""only needs to be run when I add new music to update the song list, so the bot doesn't have to be restarted"""
+	global songList
+	global songs
+	songList=os.listdir("./music/")
+	songs=['```']
+	for song in songList:
+		if len(songs[-1])>1800:
+			songs[-1]+='```'
+			songs.append('```')
+		if '.mp3' in song:
+			songs[-1]+=song.replace('.mp3','')
+			songs[-1]+='\n'
+	songs[-1]+='```'
+
 @asyncio.coroutine
 def play():
 	global message
@@ -103,7 +120,7 @@ def play():
 	global requests
 	localmode=mode
 	sleep = 0
-	ch=bot.get_channel('280954773346320387')
+	ch=bot.get_channel('377270856893857795')
 	voice = yield from bot.join_voice_channel(ch)
 	songs=shuff()
 	current=songs.pop(0)
@@ -125,6 +142,8 @@ def play():
 				current=requests.pop(0)
 			else:
 				current=songs.pop(0)
+				if ".mp3" not in current:
+					current=songs.pop(0)
 			yield from bot.change_presence(game=discord.Game(type=2,name=current))
 			player=voice.create_ffmpeg_player(mode+current,options="-q:a 9")
 			player.start()
@@ -142,6 +161,8 @@ def play():
 				current=requests.pop(0)
 			else:
 				current=songs.pop(0)
+				if ".mp3" not in current:
+					current=songs.pop(0)
 			player=voice.create_ffmpeg_player(mode+current,options="-q:a 9")
 			player.start()
 		elif player.is_playing():
@@ -153,6 +174,8 @@ def play():
 				current=requests.pop(0)
 			else:
 				current=songs.pop(0)
+				if ".mp3" not in current:
+					current=songs.pop(0)
 			yield from bot.change_presence(game=discord.Game(type=2,name=current))
 			player=voice.create_ffmpeg_player(mode+current,options="-q:a 9")
 			player.start()
@@ -208,4 +231,5 @@ def all(self):
 
 global message
 message=0
-bot.run('Mzc3Mjk0MzUxODQxMjMwODQ4.DOK2Rg.N8ZRkqDJt1oP7f3uTbEftvPKNJE')
+file_object=open("key.txt","r")
+bot.run(file_object.read().strip())
