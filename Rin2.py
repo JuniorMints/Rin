@@ -8,7 +8,7 @@ import time
 from random import shuffle
 import sys
 #from mutagen.mp3 import MP3
-bot = commands.Bot(command_prefix=['!µsic ','!music ','!Music '], descripton='I love Ramen, Kayo-chin, and being a School Idol!')
+bot = commands.Bot(command_prefix=commands.when_mentioned_or('!µsic ','!music ','!Music '), descripton='I love Ramen, Kayo-chin, and being a School Idol!')
 songList=os.listdir("./music/")
 
 if not discord.opus.is_loaded():
@@ -120,7 +120,8 @@ def play():
 	global requests
 	localmode=mode
 	sleep = 0
-	ch=bot.get_channel('377270856893857795')
+	channel=open("channel.txt","r")
+	ch=bot.get_channel(channel.read().strip())
 	voice = yield from bot.join_voice_channel(ch)
 	songs=shuff()
 	current=songs.pop(0)
