@@ -46,26 +46,29 @@ def on_ready():
 @bot.command()
 @asyncio.coroutine
 def restart():
-	"""reboot the bot, run if bot refuses to play"""
+	"""Say this if Rin-chan is misbehaving :3"""
 	sys.exit(0)
 
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def request(ctx,*,message):
+	"""Request Rin-chan to play a song! If you only know some of the name that's fine, I'll help"""
 	global requests
 	potential=[]
 	bot.send_typing(ctx.message.channel)
 	for song in songList:
 		if message.lower()+'.mp3'==song.lower():
 			requests.append(song)
-			yield from bot.say("added")
+			#yield from bot.say("added")
+			yield from bot.add_reaction(ctx.message,discord.utils.get(ctx.message.server.emojis, name="rinok"))
 			return 0
 		elif (message.lower()) in song.lower():
 			potential.append(song)
 	if len(potential)==0:
 		yield from bot.say("song not found")
 	elif len(potential)==1:
-		yield from bot.say("added")
+		#yield from bot.say("added")
+		yield from bot.add_reaction(ctx.message,discord.utils.get(ctx.message.server.emojis, name="rinok"))
 		requests.append(potential[0])
 	else:
 		response="```these are potential matches, try being more specific version"
@@ -77,25 +80,26 @@ def request(ctx,*,message):
 		yield from bot.say(response)
 
 
-@bot.command()
-@asyncio.coroutine
-def sleep(*,sleepytime):
-	"""currently disabled"""
-	global voice
-	global sleep
+#@bot.command()
+#@asyncio.coroutine
+#def sleep(*,sleepytime):
+#	"""currently disabled"""
+#	global voice
+#	global sleep
 	#sleep=int(sleepytime)
 	#yield from bot.say("Rin is going to take a quick {} second catNyap!".format(sleep))
 
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def list(ctx):
+	"""I can message you all the songs I know!"""
 	for songName in songs:
 		yield from bot.send_message(ctx.message.author,songName)
 
 @bot.command()
 @asyncio.coroutine
 def update():
-	"""only needs to be run when I add new music to update the song list, so the bot doesn't have to be restarted"""
+	"""Sometimes I forget when I learn new songs~"""
 	global songList
 	global songs
 	songList=os.listdir("./music/")
@@ -192,7 +196,7 @@ def shuff():
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def skip(self):
-	"""skips song"""
+	"""If you want me to play another song"""
 	global message
 	message=5
 
@@ -208,7 +212,7 @@ def forever(self):
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def start(self):
-	"""starts music"""
+	"""Let's start the music!"""
 	global mode
 	mode="./music/"
 	global message
@@ -219,14 +223,14 @@ def start(self):
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def rin(self):
-	"""sets to only play rin solos"""
+	"""If you only want to hear me singing"""
 	global mode
 	mode="./music/rin/"
 
 @bot.command(pass_context=True)
 @asyncio.coroutine
 def all(self):
-	"""sets to play all love live music (includes rin solos"""
+	"""If you like all Love Live Music!"""
 	global mode
 	mode="./music/"
 
