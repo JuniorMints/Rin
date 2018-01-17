@@ -42,6 +42,14 @@ def on_ready():
 	global requests
 	requests=[]
 
+#@bot.command(pass_context=True)
+#@asyncio.coroutine
+#def iam(ctx,*,role):
+#	Role=discord.utils.get(ctx.message.server.roles,name="super cool role")
+	#if "" in role.lower():
+#	print ("something")
+#	yield from bot.add_roles(ctx.message.author,Role)
+
 
 @bot.command()
 @asyncio.coroutine
